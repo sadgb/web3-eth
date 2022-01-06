@@ -290,19 +290,6 @@ module Web3::Eth::Abi
         l = Utils.big_endian_to_int arg[0,32]
         data = arg[32..-1]
         data[0, l]
-      elsif !type.dims.empty? && (l = type.dims.last)>0 # static-sized arrays
-        subtype = type.subtype
-        if subtype.dynamic?
-          start_positions = (0...l).map {|i| Utils.big_endian_to_int(arg[32*i, 32]) }
-          start_positions.push arg.size
-
-          outputs = (0...l).map {|i| arg[start_positions[i]...start_positions[i+1]] }
-
-          outputs.map {|out| decode_type(subtype, out) }
-        else
-          (0...l).map {|i| decode_type(subtype, arg[subtype.size*i, subtype.size]) }
-        end
-
       elsif type.dynamic?
         l = Utils.big_endian_to_int arg[0,32]
         raise DecodingError, "Too long length: #{l}" if l>100000
@@ -320,7 +307,11 @@ module Web3::Eth::Abi
         else
           (0...l).map {|i| decode_type(subtype, arg[32 + subtype.size*i, subtype.size]) }
         end
+      elsif !type.dims.empty? # static-sized arrays
+        l = type.dims.last
+        subtype = type.subtype
 
+        (0...l).map {|i| decode_type(subtype, arg[subtype.size*i, subtype.size]) }
       else
         decode_primitive_type type, arg
       end

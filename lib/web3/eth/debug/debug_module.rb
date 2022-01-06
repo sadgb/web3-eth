@@ -11,9 +11,7 @@ module Web3::Eth::Debug
       end
 
       def traceTransaction hash, tracer = 'callTracer',  convert_to_object = true
-        timeout = @web3_rpc.connect_options[:read_timeout] || 120
-        raw = @web3_rpc.request("#{PREFIX}#{__method__}", [hash, {tracer: tracer,
-                                                                  timeout: "#{timeout}s"}])
+        raw = @web3_rpc.request("#{PREFIX}#{__method__}", [hash, {tracer: tracer}])
         convert_to_object ? TransactionCallTrace.new(raw) : raw
       end
 
