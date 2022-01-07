@@ -2,19 +2,12 @@ module Web3
   module Eth
     class Etherscan
 
-
-      DEFAULT_CONNECT_OPTIONS = {
-          open_timeout: 10,
-          read_timeout: 70,
-          parse_result: true,
-          url: 'https://api.etherscan.io/api'
-      }
-
       attr_reader :api_key, :connect_options
 
-      def initialize api_key, connect_options: DEFAULT_CONNECT_OPTIONS
+      def initialize api_key, api_host = 'api'
         @api_key = api_key
-        @connect_options = connect_options
+        @api_host = api_host
+        @connect_options = build_connect_options
       end
 
       def method_missing m, *args
@@ -38,6 +31,15 @@ module Web3
 
 
       private
+
+      def build_connect_options
+        {
+          open_timeout: 10,
+          read_timeout: 70,
+          parse_result: true,
+          url: `https://#{@api_host}.etherscan.io/api`
+        }
+      end
 
       def request api_module, action, args = {}
 
