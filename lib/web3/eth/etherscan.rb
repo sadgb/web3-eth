@@ -37,7 +37,7 @@ module Web3
           open_timeout: 10,
           read_timeout: 70,
           parse_result: true,
-          url: `https://#{@api_host}.etherscan.io/api`
+          url: "https://#{@api_host}.etherscan.io/api"
         }
       end
 
